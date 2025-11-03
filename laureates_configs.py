@@ -51,3 +51,7 @@ def org_processor() -> ProcessorDict:
     :return: Processor function using the CONFIG_ORG.
     """
     return create_processor(CONFIG_ORG)
+
+
+process_person = person_processor()
+process_org = org_processor()
