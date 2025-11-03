@@ -53,5 +53,5 @@ def org_processor() -> ProcessorDict:
     return create_processor(CONFIG_ORG)
 
 
-process_person = person_processor()
-process_org = org_processor()
+process_persons = person_processor()
+process_orgs = org_processor()
