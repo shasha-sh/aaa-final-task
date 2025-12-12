@@ -34,22 +34,45 @@ def extract_nested_value(obj: object, keys: KeyPath) -> object | None:
     return cur
 
 
+def normalize_empty(v: object) -> object | None:
+    """
+    Converts empty values to None.
+
+    Empty values are: None, empty strings, and empty containers (list/dict/set).
+
+    :param v: Input value.
+    :return: Normalized value or None.
+    """
+    if v is None:
+        return None
+    if isinstance(v, str) and v.strip() == "":
+        return None
+    if isinstance(v, (list, dict, set)) and len(v) == 0:
+        return None
+    return v
+
+
 def process_dictionary_with_config(dictionary: dict[str, object],
                                    config: Config) -> dict[str, object | None]:
     """
     Processes a single dictionary according to a config dictionary.
+    Missing or empty values are normalized to None.
 
     :param dictionary: Dictionary to be processed.
     :param config: Config dict: for each name provide a path, or a (path, function) pair.
-    :return: Dictionary with extracted values.
+    :return: Dictionary with extracted and normalized values.
     """
     res = {}
     for name, path_info in config.items():
         if isinstance(path_info, list):
-            res[name] = extract_nested_value(dictionary, path_info)
+            res[name] = normalize_empty(
+                extract_nested_value(dictionary, path_info)
+            )
         elif isinstance(path_info, tuple):
             path, f = path_info
-            res[name] = f(extract_nested_value(dictionary, path))
+            res[name] = normalize_empty(
+                f(extract_nested_value(dictionary, path))
+            )
         else:
             raise TypeError(f"Incorrect config format: must be path"
                             f" or (path, function), got {path_info}.")

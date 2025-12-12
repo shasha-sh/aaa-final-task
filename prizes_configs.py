@@ -14,9 +14,25 @@ def parse_int(x: object) -> int | None:
         return None
 
 
+def parse_float(x: object) -> float | None:
+    """
+    Parse value as float.
+
+    :param x: Input value.
+    :return: float on success, otherwise None.
+    """
+    try:
+        if x is None:
+            return None
+        s = str(x).replace(" ", "").replace(",", ".")
+        return float(s)
+    except (TypeError, ValueError):
+        return None
+
+
 CONFIG_PRIZE = {
-    "prize_amount": ["prizeAmount"],
-    "prize_amount_adjusted": ["prizeAmountAdjusted"],
+    "prize_amount": (["prizeAmount"], parse_float),
+    "prize_amount_adjusted": (["prizeAmountAdjusted"], parse_float),
     "award_year": (["awardYear"], parse_int),
     "category_en": ["category", "en"],
     "prize_status": ["prizeStatus"],
