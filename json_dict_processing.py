@@ -3,7 +3,10 @@ from typing import Callable
 KeyPath = list[str | int]
 Config = dict[str, KeyPath | tuple[KeyPath, Callable[[object], object | None]]]
 ProcessorDict = Callable[[dict[str, object]], dict[str, object | None]]
-ProcessorList = Callable[[list[dict[str, object]] | None], list[dict[str, object | None]]]
+ProcessorList = Callable[
+    [list[dict[str, object]] | None],
+    list[dict[str, object | None]]
+]
 
 
 def extract_nested_value(obj: object, keys: KeyPath) -> object | None:
@@ -31,7 +34,8 @@ def extract_nested_value(obj: object, keys: KeyPath) -> object | None:
     return cur
 
 
-def process_dictionary_with_config(dictionary: dict[str, object], config: Config) -> dict[str, object | None]:
+def process_dictionary_with_config(dictionary: dict[str, object],
+                                   config: Config) -> dict[str, object | None]:
     """
     Processes a single dictionary according to a config dictionary.
 
@@ -47,7 +51,8 @@ def process_dictionary_with_config(dictionary: dict[str, object], config: Config
             path, f = path_info
             res[name] = f(extract_nested_value(dictionary, path))
         else:
-            raise TypeError(f"Incorrect config format: must be path or (path, function), got {path_info}.")
+            raise TypeError(f"Incorrect config format: must be path"
+                            f" or (path, function), got {path_info}.")
     return res
 
 
@@ -57,7 +62,8 @@ def process_list_of_dicts_with_config(list_of_dicts: list[dict[str, object]],
     Processes a list of dictionaries.
 
     :param list_of_dicts: List of dictionaries to be processed.
-    :param config: Config dict: for each name provide a path, or a (path, function) pair.
+    :param config: Config dict: for each name provide a path,
+    or a (path, function) pair.
     :return: List of dictionaries with extracted values.
     """
     res = []
@@ -66,13 +72,16 @@ def process_list_of_dicts_with_config(list_of_dicts: list[dict[str, object]],
     return res
 
 
-def create_processor(config: Config, list_processor: bool = False) -> ProcessorDict | ProcessorList:
+def create_processor(config: Config,
+                     list_processor: bool = False) -> ProcessorDict | ProcessorList:
     """
     Creates a ready processor with a preloaded configuration.
-    If list_processor == True, process_list_of_dicts_with_config is passed inside the processor;
+    If list_processor == True, process_list_of_dicts_with_config
+    is passed inside the processor;
     otherwise process_dictionary_with_config.
 
-    :param config: Config dict: for each name provide a path, or a (path, function) pair.
+    :param config: Config dict: for each name provide a path, or
+    a (path, function) pair.
     :param list_processor:  Flag indicating the processor type to create.
     :return: Processor function using the given config.
     """
